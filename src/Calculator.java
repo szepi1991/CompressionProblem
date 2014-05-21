@@ -6,13 +6,12 @@ public class Calculator {
 	
 	public static void main(String[] args) {
 		// try for some values of n
-		System.out.println("Trying for some values of n, with the lower bound"
-				+ " (rather than exact calculation)");
+		System.out.println("Trying for some values of n (exact calculation this time)");
 		System.out.println("I display |V|*VCdim - |E|. We are happy if it's negative");
 
-		for (int n = 2; n < 50; n += 3) {
+		for (int n = 2; n < 10; n += 1) {
 			System.out.print(2*n + " - ");
-			cannotCompress(n, true);
+			cannotCompress(n, false);
 		}
 	}
 	
@@ -24,12 +23,9 @@ public class Calculator {
 	 * @return true iff we proved there is no compression, ie |V|*VCdim < |E|
 	 */
 	public static boolean cannotCompress(int n, boolean approx) {
-		if (approx == false) 
-			throw new RuntimeException("This is not implemented yet!");
-		
-		BigInteger numEdges = getNumEdgesL(n);
+		BigInteger numEdges = (approx) ? getNumEdgesL(n) : getNumEdges(n);
 		BigInteger numVerts = getNumVertices(n);
-		BigInteger diff = numVerts.multiply(BigInteger.valueOf(n-1)).subtract(numEdges);
+		BigInteger diff = numVerts.multiply(BigInteger.valueOf(2*n-1)).subtract(numEdges);
 		boolean proved = (diff.signum() == -1);
 		
 		if (PRINT_INFO) {
@@ -64,6 +60,30 @@ public class Calculator {
 		return eLower.multiply(BigInteger.valueOf(n*n)); 
 	}
 
+	/**
+	 * This function returns the (exact) number of edges in the one 
+	 * inclusion graph of the concept classes to the sample we talked about.
+	 * 
+	 * @param n	HALF the number of numbers we are considering total orders on
+	 */
+	public static BigInteger getNumEdges(int n) {
+		BigInteger edges = factorial(n-1).pow(2);
+		BigInteger factor = BigInteger.valueOf(4*n-3); // 4n-3
+		edges = edges.multiply(factor);
+		
+		for (int k = 1; k < n-1; ++k) {
+			// this corresponds to one summand in the sum
+			BigInteger prod = factorial(k).pow(2);
+			prod = prod.multiply(  Stirling.stirling(n-1, k).pow(2) );
+			prod = prod.multiply(BigInteger.valueOf(4*k*k + 11*k + 4));
+			
+			edges = edges.add(prod);
+		}
+		
+		return edges.multiply(BigInteger.valueOf(n*n)); 
+	}
+	
+	
 //	/**
 //	 * This function returns the number of edges in the one inclusion graph
 //	 * of the concept classes to the sample we talked about.
@@ -96,7 +116,7 @@ public class Calculator {
 			verts = verts.add(prod);
 		}
 		
-		return verts; 
+		return verts.multiply(BigInteger.valueOf(2)); 
 	}
 	
 	
