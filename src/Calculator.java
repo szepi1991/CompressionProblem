@@ -1,5 +1,3 @@
-import java.math.BigInteger;
-
 
 public class Calculator {
 
@@ -8,11 +6,4 @@ public class Calculator {
 
 	}
 	
-	public BigInteger stringling(int n, int k) {
-		// we calculate it recursively.. 
-		// filling the table bottom-up would probably be better
-		
-		return null; // TODO temp
-	}
-
 }
